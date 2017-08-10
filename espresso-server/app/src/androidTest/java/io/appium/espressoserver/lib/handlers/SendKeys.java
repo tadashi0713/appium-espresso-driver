@@ -1,11 +1,11 @@
 package io.appium.espressoserver.lib.handlers;
 
 import android.support.test.espresso.PerformException;
-import android.support.test.espresso.ViewInteraction;
 
 import javax.annotation.Nullable;
 
 import io.appium.espressoserver.lib.handlers.exceptions.AppiumException;
+import io.appium.espressoserver.lib.helpers.ViewOrDataInteraction;
 import io.appium.espressoserver.lib.model.Element;
 import io.appium.espressoserver.lib.model.TextParams;
 
@@ -18,7 +18,7 @@ public class SendKeys implements RequestHandler<TextParams, Void> {
     @Nullable
     public Void handle(TextParams params) throws AppiumException {
         String id = params.getElementId();
-        ViewInteraction viewInteraction = Element.getById(id);
+        ViewOrDataInteraction viewInteraction = Element.getById(id);
 
         // Convert the array of text to a String
         String[] textArray = params.getValue();

@@ -1,13 +1,12 @@
 package io.appium.espressoserver.lib.handlers;
 
-import android.support.test.espresso.ViewInteraction;
-
 import java.util.ArrayList;
 import java.util.List;
 
 import io.appium.espressoserver.lib.handlers.exceptions.AppiumException;
 import io.appium.espressoserver.lib.handlers.exceptions.InvalidStrategyException;
 import io.appium.espressoserver.lib.handlers.exceptions.MissingCommandsException;
+import io.appium.espressoserver.lib.helpers.ViewOrDataInteraction;
 import io.appium.espressoserver.lib.model.Element;
 import io.appium.espressoserver.lib.model.Locator;
 
@@ -24,11 +23,11 @@ public class FindElements implements RequestHandler<Locator, List<Element>> {
         }
 
         // Get the viewInteractions
-        List<ViewInteraction> viewInteractions = findAllBy(locator.getUsing(), locator.getValue());
+        List<ViewOrDataInteraction> viewInteractions = findAllBy(locator.getUsing(), locator.getValue());
 
         // Turn it into a list of elements
         List<Element> elements = new ArrayList<>();
-        for(ViewInteraction viewInteraction : viewInteractions) {
+        for(ViewOrDataInteraction viewInteraction : viewInteractions) {
             elements.add(new Element(viewInteraction));
         }
 

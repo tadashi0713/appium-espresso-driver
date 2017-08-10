@@ -29,7 +29,8 @@ public class Screenshot implements RequestHandler<AppiumParams, String> {
             // Stream the bitmap to byte array stream
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             int quality = 100;
-            bitmapScreenCap.compress(Bitmap.CompressFormat.JPEG, quality, outputStream);
+            // TODO: Test that PNG renders properly
+            bitmapScreenCap.compress(Bitmap.CompressFormat.PNG, quality, outputStream);
             byte[] bytes = outputStream.toByteArray();
 
             // Encode the byte array stream to base 64

@@ -2,13 +2,13 @@ package io.appium.espressoserver.lib.viewaction;
 
 import android.support.test.espresso.UiController;
 import android.support.test.espresso.ViewAction;
-import android.support.test.espresso.ViewInteraction;
 import android.view.View;
 import android.widget.TextView;
 
 import org.hamcrest.Matcher;
 
 import io.appium.espressoserver.lib.handlers.exceptions.AppiumException;
+import io.appium.espressoserver.lib.helpers.ViewOrDataInteraction;
 
 import static android.support.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static android.support.test.espresso.matcher.ViewMatchers.isRoot;
@@ -38,9 +38,9 @@ public class ViewTextGetter {
         }
     }
 
-    public CharSequence get(ViewInteraction viewInteraction) throws AppiumException {
+    public CharSequence get(ViewOrDataInteraction interaction) throws AppiumException {
         try {
-            viewInteraction.perform(new GetTextViewAction());
+            interaction.perform(new GetTextViewAction());
             TextView textView = (TextView) views[0];
             return textView.getText();
         } catch (ClassCastException cce) {

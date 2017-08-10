@@ -27,7 +27,9 @@ public enum Strategy {
     ACCESSIBILITY_ID("accessibility id"),
     @SerializedName("text")
     TEXT("text"),
-
+    @SerializedName("-espresso hamcrest")
+    ESPRESSO_HAMCREST("-espresso hamcrest"),
+    @SerializedName("-android uiautomator")
     ANDROID_UIAUTOMATOR("-android uiautomator");
 
     private final String strategyName;
