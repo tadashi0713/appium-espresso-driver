@@ -32,6 +32,7 @@ public class ViewOrDataInteraction {
     }
 
     public ViewInteraction perform (ViewAction... viewActions) {
+        // TODO: Add staleelement handler here instead of Element.java
         return this.viewInteraction != null ? this.viewInteraction.perform(viewActions)
                 : this.dataInteraction.perform(viewActions);
     }
@@ -39,5 +40,9 @@ public class ViewOrDataInteraction {
     public ViewInteraction check (ViewAssertion viewAssert) {
         return this.viewInteraction != null ? this.viewInteraction.check(viewAssert)
                 : this.dataInteraction.check(viewAssert);
+    }
+
+    public ViewInteraction getViewInteraction () {
+        return this.viewInteraction;
     }
 }

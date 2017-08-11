@@ -35,11 +35,12 @@ public class Element {
         ViewOrDataInteraction viewInteraction = cache.get(elementId);
 
         // Check if the element is stale
-        try {
+        // TODO: Find another way to do StaleElement checking. Doesn't work for data interactions.
+        /*try {
             viewInteraction.check(matches(isDisplayed()));
         } catch (NoMatchingViewException nme) {
             throw new StaleElementException(elementId);
-        }
+        }*/
 
         return viewInteraction;
     }

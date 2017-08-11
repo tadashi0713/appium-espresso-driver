@@ -7,6 +7,7 @@ import android.view.View;
 import org.hamcrest.Matcher;
 
 import static android.support.test.espresso.Espresso.onView;
+import static android.support.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static android.support.test.espresso.matcher.ViewMatchers.isRoot;
 
 /**
@@ -24,7 +25,7 @@ public class RootViewFinder {
 
         @Override
         public Matcher<View> getConstraints() {
-            return isRoot();
+            return isDescendantOfA(isRoot());
         }
 
         @Override
@@ -45,6 +46,11 @@ public class RootViewFinder {
      */
     public View getRootView() {
         onView(isRoot()).perform(new GetViewAction());
+        return views[0];
+    }
+
+    public View getView(Matcher<View> matcher) {
+        onView(matcher).perform(new GetViewAction());
         return views[0];
     }
 }

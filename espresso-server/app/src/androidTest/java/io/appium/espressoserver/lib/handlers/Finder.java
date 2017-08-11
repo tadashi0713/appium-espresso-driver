@@ -10,8 +10,6 @@ import io.appium.espressoserver.lib.helpers.ViewOrDataInteraction;
 import io.appium.espressoserver.lib.model.Element;
 import io.appium.espressoserver.lib.model.Locator;
 
-import static android.support.test.espresso.assertion.ViewAssertions.matches;
-import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static io.appium.espressoserver.lib.helpers.ViewFinder.findBy;
 
 public class Finder implements RequestHandler<Locator, Element> {
@@ -26,7 +24,7 @@ public class Finder implements RequestHandler<Locator, Element> {
             }
             // Test the selector
             ViewOrDataInteraction matcher = findBy(locator.getUsing(), locator.getValue());
-            matcher.check(matches(isDisplayed()));
+            // matcher.check(matches(isDisplayed())); // TODO: isDisplayed probably won't work for DataInteractions
 
             // If we have a match, return success
             return new Element(matcher);

@@ -34,7 +34,7 @@ describe('elementByXPath', function () {
     } catch (ign) {}
   });
 
-  /*it('should find an element by it\'s xpath', async () => {
+  it('should find an element by it\'s xpath', async () => {
     let el = await driver.elementByXPath("//*[@content-desc='Animation']");
     el.should.exist;
     await el.click();
@@ -51,8 +51,11 @@ describe('elementByXPath', function () {
     let el = await driver.elementByXPath("//*[@content-desc='Animation']");
     await el.click();
     await el.click().should.eventually.be.rejectedWith(/no longer attached /);
-  });*/
+  });
   it('should find elements by Hamcrest selector strategy', async () => {
-    let el = await driver.element('-espresso hamcrest', 'This is a test');
+    const viewsEl = await driver.elementByAccessibilityId('Views');
+    await viewsEl.click();
+    let el2 = await driver.element('-espresso hamcrest', 'Map; hasEntry(equalToIgnoringCase("contentDescription"), is(equalToIgnoringCase("WebView3")))');
+    await el2.click();
   });
 });

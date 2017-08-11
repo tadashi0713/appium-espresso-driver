@@ -3,22 +3,30 @@ package io.appium.espressoserver.lib.helpers;
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.espresso.NoMatchingViewException;
+import android.support.test.espresso.matcher.CursorMatchers;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.CursorAdapter;
 
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Nullable;
 
+import io.appium.espressoserver.lib.handlers.exceptions.AppiumException;
 import io.appium.espressoserver.lib.handlers.exceptions.InvalidStrategyException;
 import io.appium.espressoserver.lib.handlers.exceptions.XPathLookupException;
 import io.appium.espressoserver.lib.model.Strategy;
+import io.appium.espressoserver.lib.viewaction.RootViewFinder;
 
+import static android.support.test.espresso.Espresso.onData;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
@@ -27,7 +35,12 @@ import static android.support.test.espresso.matcher.ViewMatchers.withContentDesc
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static io.appium.espressoserver.lib.viewmatcher.WithXPath.withXPath;
+import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.endsWith;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasEntry;
+import static org.hamcrest.Matchers.isA;
+import static org.hamcrest.core.Is.is;
 
 /**
  * Helper methods to find elements based on locator strategies and selectors
@@ -43,7 +56,7 @@ public class ViewFinder {
      * @throws XPathLookupException
      */
     @Nullable
-    public static ViewOrDataInteraction findBy(Strategy strategy, String selector) throws InvalidStrategyException, XPathLookupException {
+    public static ViewOrDataInteraction findBy(Strategy strategy, String selector) throws AppiumException {
         List<ViewOrDataInteraction> viewInteractions = findAllBy(strategy, selector, true);
         if (viewInteractions.isEmpty()) {
             return null;
@@ -59,13 +72,13 @@ public class ViewFinder {
      * @throws InvalidStrategyException
      * @throws XPathLookupException
      */
-    public static List<ViewOrDataInteraction> findAllBy(Strategy strategy, String selector) throws InvalidStrategyException, XPathLookupException {
+    public static List<ViewOrDataInteraction> findAllBy(Strategy strategy, String selector) throws AppiumException {
         return findAllBy(strategy, selector, false);
     }
 
     ///Find By different strategies
     private static List<ViewOrDataInteraction> findAllBy(Strategy strategy, String selector, boolean findOne)
-            throws InvalidStrategyException, XPathLookupException {
+            throws AppiumException {
         List<ViewOrDataInteraction> matcher;
 
         switch (strategy) {
@@ -76,33 +89,37 @@ public class ViewFinder {
                 int id = context.getResources().getIdentifier(selector, "Id",
                         InstrumentationRegistry.getTargetContext().getPackageName());
 
-                matcher = getViewOrDataInteractions(withId(id), findOne);
+                matcher = getViewInteractions(withId(id), findOne);
+                //Object adapter = ((AdapterView) new RootViewFinder().getView(withId(id))).getAdapter();
                 break;
             case CLASS_NAME:
                 // with class name
                 // TODO: improve this finder with instanceOf
-                matcher = getViewOrDataInteractions(withClassName(endsWith(selector)), findOne);
+                matcher = getViewInteractions(withClassName(endsWith(selector)), findOne);
                 break;
             case TEXT:
                 // with text
-                matcher = getViewOrDataInteractions(withText(selector), findOne);
+                matcher = getViewInteractions(withText(selector), findOne);
                 break;
             case ACCESSIBILITY_ID:
                 // with content description
-                matcher = getViewOrDataInteractions(withContentDescription(selector), findOne);
+                matcher = getViewInteractions(withContentDescription(selector), findOne);
                 break;
             case XPATH:
                 // If we're only looking for one item that matches xpath, pass it index 0 or else
                 // Espresso throws an AmbiguousMatcherException
                 if (findOne) {
-                    matcher = getViewOrDataInteractions(withXPath(selector, 0), true);
+                    matcher = getViewInteractions(withXPath(selector, 0), true);
                 } else {
-                    matcher = getViewOrDataInteractions(withXPath(selector), false);
+                    matcher = getViewInteractions(withXPath(selector), false);
                 }
                 break;
-            /*case ESPRESSO_HAMCREST:
-                System.out.println("Calling Espresso hamcrest matcher");
-                break;*/
+            case ESPRESSO_HAMCREST:
+                // TODO: Doing a basic string matcher for now, ideally we'd like to do complex hamcrest expressions
+                // matcher = getDataInteractions(allOf(isA(Map.class), hasEntry(equalTo("contentDescription"), is(selector))));
+                HamcrestStringParser hamcrestStringParser = new HamcrestStringParser(selector);
+                matcher = getDataInteractions(allOf(isA(hamcrestStringParser.getMatcherClass()), hamcrestStringParser.evaluate()));
+                break;
             default:
                 throw new InvalidStrategyException(String.format("Strategy is not implemented: %s", strategy.getStrategyName()));
         }
@@ -110,7 +127,11 @@ public class ViewFinder {
         return matcher;
     }
 
-    private static List<ViewOrDataInteraction> getViewOrDataInteractions(Matcher<View> matcher, boolean findOne) {
+    private static List<ViewOrDataInteraction> getDataInteractions (Matcher<? extends Object> matcher) {
+        return Collections.singletonList(new ViewOrDataInteraction(onData(matcher)));
+    }
+
+    private static List<ViewOrDataInteraction> getViewInteractions(Matcher<View> matcher, boolean findOne) {
         // If it's just one view we want, return a singleton list
         if (findOne) {
             return Collections.singletonList(new ViewOrDataInteraction(onView(matcher)));

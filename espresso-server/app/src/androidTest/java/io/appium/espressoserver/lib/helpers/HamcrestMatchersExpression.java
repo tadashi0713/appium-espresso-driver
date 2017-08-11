@@ -3,6 +3,7 @@ package io.appium.espressoserver.lib.helpers;
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import io.appium.espressoserver.lib.helpers.exceptions.InvalidHamcrestExpressionException;
@@ -12,15 +13,11 @@ import io.appium.espressoserver.lib.helpers.exceptions.InvalidHamcrestExpression
  */
 public class HamcrestMatchersExpression {
 
-    private HamcrestMatchersExpression nestedExpression;
     private Method hamcrestMethod;
     private Class[] argTypes;
     private Object[] args;
-    private Class matcherClass;
 
     public HamcrestMatchersExpression(Class matcherClass, String hamcrestExpression) throws InvalidHamcrestExpressionException {
-        this.matcherClass = matcherClass;
-
         // What comes before the opening parantheses is supposed to be the methodName
         int openingParanthesesIndex = hamcrestExpression.indexOf('(');
         if (openingParanthesesIndex < 0) {
@@ -29,7 +26,7 @@ public class HamcrestMatchersExpression {
         String methodName = hamcrestExpression.substring(0, openingParanthesesIndex).trim();
 
         // What comes between the parantheses are the args
-        int closingParanthesesIndex = hamcrestExpression.indexOf(')');
+        int closingParanthesesIndex = hamcrestExpression.lastIndexOf(')');
         if (closingParanthesesIndex < 0) {
             throw new InvalidHamcrestExpressionException(String.format("%s is not a valid Hamcrest expression", hamcrestExpression));
         }
@@ -52,9 +49,10 @@ public class HamcrestMatchersExpression {
 
         // Using reflection, get the hamcrest method that will be invoked by this expression
         try {
+            // TODO: How can we do this so that we allow inherited argTypes?
             this.hamcrestMethod = Matchers.class.getMethod(methodName, argTypes);
         } catch (NoSuchMethodException nsme) {
-            throw new InvalidHamcrestExpressionException(String.format("'%s' is not a valid Hamcrest method", methodName));
+            throw new InvalidHamcrestExpressionException(String.format("'%s' is not a valid '%s' method", methodName, Matcher.class.getName()));
         }
     }
 
@@ -93,7 +91,7 @@ public class HamcrestMatchersExpression {
         return Matcher.class;
     }
 
-    private Object getArg(Class type, String arg) {
+    private Object getArg(Class type, String arg) throws InvalidHamcrestExpressionException {
         if (type.equals(String.class)) {
             return arg.substring(1, arg.length() - 1);
         } else if (type.equals(Boolean.class)) {
@@ -104,6 +102,8 @@ public class HamcrestMatchersExpression {
             return Integer.parseInt(arg);
         } else if (type.equals(Character.class)) {
             return arg.charAt(0);
+        } else if (type.equals(Matcher.class)) {
+            return new HamcrestMatchersExpression(Matcher.class, arg).evaluate();
         }
 
         return arg;
@@ -119,5 +119,15 @@ public class HamcrestMatchersExpression {
 
     public Object[] getArgs () {
         return args;
+    }
+
+    public Object evaluate () throws InvalidHamcrestExpressionException {
+        try {
+            return hamcrestMethod.invoke(null, args);
+        } catch (IllegalAccessException ilae) {
+            throw new InvalidHamcrestExpressionException(String.format("Invalid method invocation %s", hamcrestMethod.getName()));
+        } catch (InvocationTargetException ite) {
+            throw new InvalidHamcrestExpressionException(String.format("Invalid method invocation %s", hamcrestMethod.getName()));
+        }
     }
 }
