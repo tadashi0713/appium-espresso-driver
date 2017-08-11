@@ -2,6 +2,8 @@ package io.appium.espressoserver.lib.model;
 
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Adapter;
+import android.widget.AdapterView;
 
 import org.apache.xml.utils.XMLChar;
 import org.w3c.dom.*;
@@ -105,6 +107,18 @@ public class SourceDocument {
         // If cacheElementReferences == true, then cache a reference to the View
         if (cacheElementReferences) {
             viewMap.put(element, view);
+        }
+
+        // If it's an AdapterView, get the adapters
+        if (view instanceof AdapterView) {
+            AdapterView adapterView = (AdapterView) view;
+            Adapter adapter = adapterView.getAdapter();
+            StringBuilder adapterData = new StringBuilder();
+            for (int i=0; i<adapter.getCount(); i++) {
+                adapterData.append(adapter.getItem(i));
+                adapterData.append(";");
+            }
+            setAttribute(element, ViewAttributesEnum.ADAPTERS, adapterData);
         }
 
         // Visit the children and build them too
