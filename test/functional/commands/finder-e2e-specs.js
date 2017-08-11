@@ -53,9 +53,33 @@ describe('elementByXPath', function () {
     await el.click().should.eventually.be.rejectedWith(/no longer attached /);
   });
   it('should find elements by Hamcrest selector strategy', async () => {
-    const viewsEl = await driver.elementByAccessibilityId('Views');
+    const viewsEl = await driver.elementByAccessibilityId("Views");
     await viewsEl.click();
-    let el2 = await driver.element('-espresso hamcrest', 'Map; hasEntry(equalToIgnoringCase("contentDescription"), is(equalToIgnoringCase("WebView3")))');
+    let el2 = await driver.element('-espresso hamcrest', JSON.stringify({
+      hasEntry: {
+        key: {
+          equalTo: "contentDescription"
+        },
+        value: {
+          equalTo: "Lists"
+        }
+      }
+    }));
     await el2.click();
+    let el3 = await driver.element('-espresso hamcrest', JSON.stringify({
+      hasEntry: {
+        key: {
+          equalTo: "contentDescription"
+        },
+        value: {
+          equalTo: "04. ListAdapter"
+        }
+      }
+    }));
+    await el3.click();
+    let el4 = await driver.element('-espresso hamcrest', JSON.stringify({
+      isA: "Integer",
+      equalTo: 7,
+    }));
   });
 });

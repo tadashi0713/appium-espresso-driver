@@ -1,11 +1,8 @@
 package io.appium.espressoserver.test.helpers;
 
-import io.appium.espressoserver.lib.helpers.HamcrestMatchersExpression;
-
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
-import org.hamcrest.TypeSafeMatcher;
 import org.hamcrest.collection.IsEmptyCollection;
 import org.hamcrest.core.StringStartsWith;
 import org.junit.Before;

@@ -115,10 +115,8 @@ public class ViewFinder {
                 }
                 break;
             case ESPRESSO_HAMCREST:
-                // TODO: Doing a basic string matcher for now, ideally we'd like to do complex hamcrest expressions
-                // matcher = getDataInteractions(allOf(isA(Map.class), hasEntry(equalTo("contentDescription"), is(selector))));
-                HamcrestStringParser hamcrestStringParser = new HamcrestStringParser(selector);
-                matcher = getDataInteractions(allOf(isA(hamcrestStringParser.getMatcherClass()), hamcrestStringParser.evaluate()));
+                HamcrestJSONParser hamcrestJSONParser = new HamcrestJSONParser(selector);
+                matcher = getDataInteractions(hamcrestJSONParser.evaluate());
                 break;
             default:
                 throw new InvalidStrategyException(String.format("Strategy is not implemented: %s", strategy.getStrategyName()));
