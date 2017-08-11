@@ -9,6 +9,7 @@ import org.hamcrest.Matcher;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static android.support.test.espresso.matcher.ViewMatchers.isRoot;
+import static org.hamcrest.Matchers.*;
 
 /**
  * Get the Root View of the Android App
@@ -25,7 +26,7 @@ public class RootViewFinder {
 
         @Override
         public Matcher<View> getConstraints() {
-            return isDescendantOfA(isRoot());
+            return anyOf(isRoot(), isDescendantOfA(isRoot()));
         }
 
         @Override
