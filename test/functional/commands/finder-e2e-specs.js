@@ -34,7 +34,7 @@ describe('elementByXPath', function () {
     } catch (ign) {}
   });
 
-  it('should find an element by it\'s xpath', async () => {
+  /*it('should find an element by it\'s xpath', async () => {
     let el = await driver.elementByXPath("//*[@content-desc='Animation']");
     el.should.exist;
     await el.click();
@@ -51,7 +51,7 @@ describe('elementByXPath', function () {
     let el = await driver.elementByXPath("//*[@content-desc='Animation']");
     await el.click();
     await el.click().should.eventually.be.rejectedWith(/no longer attached /);
-  });
+  });*/
   it('should find elements by Hamcrest selector strategy', async () => {
     const viewsEl = await driver.elementByAccessibilityId("Views");
     await viewsEl.click();
@@ -77,9 +77,7 @@ describe('elementByXPath', function () {
       }
     }));
     await el3.click();
-    let el4 = await driver.element('-espresso hamcrest', JSON.stringify({
-      isA: "Integer",
-      equalTo: 7,
-    }));
+    let el4 = await driver.element('-espresso hamcrest', 1);
+    await el4.text();
   });
 });

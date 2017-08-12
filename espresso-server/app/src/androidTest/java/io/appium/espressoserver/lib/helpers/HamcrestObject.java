@@ -1,6 +1,7 @@
 package io.appium.espressoserver.lib.helpers;
 
 import com.google.gson.Gson;
+import com.google.gson.annotations.SerializedName;
 
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Matcher;
@@ -20,7 +21,24 @@ public class HamcrestObject<T> {
         public HamcrestObject value;
     }
 
-    public String isA; // TODO: Make this an enum
+    public static enum HamcrestTypes {
+        @SerializedName("String")
+        STRING,
+        @SerializedName("Integer")
+        INTEGER,
+        @SerializedName("Double")
+        DOUBLE,
+        @SerializedName("Boolean")
+        BOOLEAN,
+        @SerializedName("Array")
+        ARRAY,
+        @SerializedName("Map")
+        MAP,
+        @SerializedName("Cursor")
+        CURSOR,
+    }
+
+    public HamcrestTypes isA; // TODO: Make this an enum
     public List<HamcrestObject<T>> allOf;
     public List<HamcrestObject<T>> anyOf;
     public boolean anything = false;
