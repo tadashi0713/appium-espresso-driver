@@ -25,6 +25,7 @@ env:
     - TEST=functional RECURSIVE=1
 before_script:
   # android stuff
+   $(npm bin)/android-emu-travis-pre
   - android list targets
   - echo no | android create avd --force -n test -t android-21 --abi armeabi-v7a
   - emulator -avd test -no-audio -no-window &
