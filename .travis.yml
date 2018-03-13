@@ -24,6 +24,13 @@ env:
     - TEST=unit RECURSIVE=1
     - TEST=functional RECURSIVE=1
 before_script:
+  # node stuff
+  - curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.1/install.sh | bash
+  - nvm install 6
+  - npm install -g gulp
+  - npm install -g mocha
+  - npm install
+
   # android stuff
   - $(npm bin)/android-emu-travis-pre
   - android list targets
@@ -31,13 +38,6 @@ before_script:
   - emulator -avd test -no-audio -no-window &
   # skip waiting for start until after,
   # since they can happen in parallel
-
-  # node stuff
-  - curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.1/install.sh | bash
-  - nvm install 6
-  - npm install -g gulp
-  - npm install -g mocha
-  - npm install
 
   # build the espresso server
   - pushd espresso-server
