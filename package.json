@@ -26,6 +26,7 @@
     "lib": "lib"
   },
   "dependencies": {
+    "adbkit": "^2.11.0",
     "appium-adb": "^6.0.1",
     "appium-android-driver": "^2.0.0",
     "appium-base-driver": "^2.18.4",
@@ -55,7 +56,7 @@
   "devDependencies": {
     "android-apidemos": "^2.0.0",
     "appium-gulp-plugins": "^1.4.13",
-    "appium-test-support": "^0.1.0",
+    "appium-test-support": "^0.7.2",
     "babel-eslint": "^7.2.3",
     "chai": "^3.5.0",
     "chai-as-promised": "^6.0.0",

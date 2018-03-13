@@ -13,3 +13,6 @@ espresso-server/app/build
 node_modules
 build
 package-lock.json
+.gradle/
+espresso-server/.settings
+espresso-server/app/.settings
