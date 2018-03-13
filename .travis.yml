@@ -1,12 +1,10 @@
 language: android
-sudo: false
+dist: precise
 android:
   components:
     # use the latest revision of Android SDK Tools
     - platform-tools
     - tools
-    - build-tools-25.0.3
-    - android-25
 
     # Additional components
     - extra-google-google_play_services
@@ -17,8 +15,6 @@ android:
     # Specify at least one system image,
     # if you need to run emulator(s) during your tests
     - sys-img-armeabi-v7a-android-22
-jdk:
-  - oraclejdk8
 env:
   global:
     - _FORCE_LOGS=1
@@ -30,33 +26,34 @@ env:
     - ANDROID_EMU_TARGET=android-21
     - ANDROID_EMU_ABI=armeabi-v7a
   matrix:
-    - TEST=unit RECURSIVE=1
-    - TEST=functional RECURSIVE=1
+    #- START_EMU=0 RECURSIVE=--recursive TEST=unit COVERALLS=1
+    - TEST=functional
+    #- TEST=functional/commands
+    #- TEST=functional/commands/find
+    #- TEST=functional/commands/keyboard
+    #- TEST=functional/commands/general
 before_script:
   # node stuff
   - curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.1/install.sh | bash
   - nvm install 6
-  - npm install -g gulp
-  - npm install -g mocha
-  - npm install
+  - node --version
+  - npm --version
+  - npm install appium-test-support # get the travis emu scripts
 
   # android stuff
   - android list target
   - $(npm bin)/android-emu-travis-pre
-  - echo no | android create avd --force -n test -t android-21 --abi armeabi-v7a
-  - emulator -avd test -no-audio -no-window &
-  # skip waiting for start until after,
-  # since they can happen in parallel
 
-  # build the espresso server
-  - pushd espresso-server
-  - ./gradlew clean assembleAndroidTest
-  - popd
+  - SERVER_INSTALL_ATTEMPTS=50 npm install
 
-  # make sure the emulator is up and running
-  - android-wait-for-emulator
-  - adb shell input keyevent 82 &
+  # for chromedriver
+  - sudo add-apt-repository ppa:ubuntu-toolchain-r/test --yes
+  - sudo apt-get update
+  - sudo apt-get install libstdc++6-4.7-dev  
+
+  # make sure emulator started
+  - $(npm bin)/android-emu-travis-post
 script:
-  - gulp eslint && if [ -n "$RECURSIVE" ]; then mocha -t 240000 --recursive build/test/$TEST -g @skip-ci -i; else mocha -t 240000 build/test/$TEST -g @skip-ci -i; fi
+  - npm run lint && npm run mocha -- -t $MOCHA_TIMEOUT -R spec $RECURSIVE build/test/$TEST -ig @skip-ci
 after_success:
-  - gulp coveralls
+  - if [ -n "$COVERALLS" ]; then _FORCE_LOGS=0 npm run coverage; fi
