@@ -32,6 +32,23 @@ describe('source commands', function () {
     } catch (ign) {}
   });
   it('should get sourceXML, parse it, and find a node by xpath', async function () {
+<<<<<<< Updated upstream
+=======
+    driver = wd.promiseChainRemote(HOST, PORT);
+    await driver.init(APIDEMO_CAPS);
+    const sourceXML = await driver.source();
+    sourceXML.should.be.a.string;
+    const doc = new DOMParser().parseFromString(sourceXML, 'test/xml');
+    const node = xpath.select('//*[content-desc=Animation]', doc);
+    node.should.exist;
+  });
+  it('should get sourceXML from a react native app and have view-tag', async function () {
+    driver = wd.promiseChainRemote(HOST, PORT);
+    await driver.init({
+      ...APIDEMO_CAPS,
+      app: path.resolve(__dirname, '..', '..', 'assets', 'ReactNativeApp.apk'),
+    });
+>>>>>>> Stashed changes
     const sourceXML = await driver.source();
     sourceXML.should.be.a.string;
     const doc = new DOMParser().parseFromString(sourceXML, 'test/xml');

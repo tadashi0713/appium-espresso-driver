@@ -1,6 +1,7 @@
 import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
 import wd from 'wd';
+import B from 'bluebird';
 import { HOST, PORT } from './helpers/session';
 import { APIDEMO_CAPS } from './desired';
 import { startServer } from '../..';
@@ -27,13 +28,14 @@ describe('createSession', function () {
     } catch (ign) {}
   });
 
-  it('should start android session focusing on default activity', async function () {
+  it.only('should start android session focusing on default activity', async function () {
     let status = await driver.init(APIDEMO_CAPS);
 
     status[1].app.should.eql(APIDEMO_CAPS.app);
 
     let activity = await driver.getCurrentDeviceActivity();
     activity.should.equal('.ApiDemos');
+    await B.delay(100000);
   });
   it('should start android session focusing on specified activity', async function () {
     // for now the activity needs to be fully qualified

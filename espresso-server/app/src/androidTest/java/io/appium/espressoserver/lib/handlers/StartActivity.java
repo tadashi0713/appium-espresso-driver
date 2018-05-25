@@ -20,7 +20,12 @@ import android.app.Activity;
 import android.app.Instrumentation;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
+import android.net.Uri;
 import android.support.test.InstrumentationRegistry;
+
+import java.util.List;
 
 import io.appium.espressoserver.lib.handlers.exceptions.AppiumException;
 import io.appium.espressoserver.lib.helpers.Logger;
@@ -52,8 +57,8 @@ public class StartActivity implements RequestHandler<StartActivityParams, Void> 
         if (appActivity.startsWith(".")) {
             fullyQualifiedAppActivity = context.getPackageName() + appActivity;
         }
-        intent.setClassName(mInstrumentation.getTargetContext(), fullyQualifiedAppActivity)
-        ;
+        intent.setClassName(context, fullyQualifiedAppActivity);
+
         mInstrumentation.startActivitySync(intent);
 
         if (waitForActivity) {
